@@ -1,0 +1,22 @@
+services:
+  pgdata:
+    image: postgres:17-alpine
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - postData:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 5050:80
+    env_file:
+      - ./.env
+    depends_on:
+      - pgdata
+
+volumes:
+  postData:
