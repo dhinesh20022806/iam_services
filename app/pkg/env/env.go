@@ -1,5 +1,11 @@
 package env
 
+import (
+	"fmt"
+
+	"github.com/joeshaw/envdecode"
+)
+
 
 
 type config struct {
@@ -11,3 +17,20 @@ type config struct {
 }
 
 var Config config
+
+func init() {
+
+	Reload()
+}
+
+func Reload() {
+
+	Config = config{}
+
+	err := envdecode.Decode(&Config)
+
+	if err != nil {
+		fmt.Printf("error %v \n", err)
+		panic("env not loaded")
+	}
+}

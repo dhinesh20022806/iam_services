@@ -10,6 +10,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	_ "github.com/lib/pq"
 )
 
 var conn *sql.DB
@@ -18,7 +20,9 @@ var conn *sql.DB
 func init() {
 
 	var err error
-	conn, err := sql.Open("postgres", env.Config.Database.URL)
+
+	fmt.Printf(env.Config.Database.URL + "env value" + "\n")
+	conn, err = sql.Open("postgres", env.Config.Database.URL)
 
 	if err != nil {
 		fmt.Printf("failed to open connection to the database %v", err)
@@ -26,6 +30,13 @@ func init() {
 
 	conn.SetMaxIdleConns(env.Config.Database.MaxIdleConn)
 	conn.SetMaxOpenConns(env.Config.Database.MaxOpenConn)
+
+	if err := conn.Ping(); err != nil {
+        conn.Close()
+        conn = nil
+        panic(fmt.Errorf("failed to connect to database: %w", err))
+    }
+
 }
 
 func Migrate(path string) error {
@@ -43,6 +54,8 @@ func Migrate(path string) error {
 		fmt.Errorf("Failed to open read %s and %v", path, err)
 	}
 
+	slog.Info("these many files find ",  "length", len(files))
+
 	versions := make([]int, len(files))
 	versionFiles := make(map[int]string, len(files))
 
@@ -50,6 +63,7 @@ func Migrate(path string) error {
 
 		fileName := file.Name()
 		
+		slog.Info("what are the files", "fileName", fileName)
 		parts := strings.Split(fileName, "_")
 
 		
@@ -73,9 +87,19 @@ func Migrate(path string) error {
 
 	totalMigrationExecuted := 0
 
+	fmt.Printf("versions %v \n", versionFiles)
+
 	for _, version := range versions {
+		fmt.Printf("version %d, lastVersion %d \n", version, lastVersion )
 		if version > lastVersion {
+
 			fileName := versionFiles[version]
+
+			fmt.Print(fileName)
+			if strings.Contains(fileName, "down") {
+				continue
+			}
+
 			slog.Info("Running Version:", "version", version, "filename", fileName)
 			err := runMigration(version, path, fileName)
 
@@ -138,7 +162,7 @@ func runMigration(version int, path string, filename string) error {
 		return err
 	}
 
-	_, err = trx.tx.Exec("INSERT INTO migrations_history (version, filename) VALUES ($1, $2)", version, filename)
+	_, err = trx.tx.Exec("INSERT INTO migrations_history (versions, filename) VALUES ($1, $2)", version, filename)
 
 	if err != nil {
 
@@ -149,6 +173,8 @@ func runMigration(version int, path string, filename string) error {
 }
 
 func getLastMigrate() (int, error) {
+
+
 
 	_, err := conn.Exec(`CREATE TABLE IF NOT EXISTS migrations_history (
 	     versions BIGINT PRIMARY KEY,
@@ -162,7 +188,7 @@ func getLastMigrate() (int, error) {
 
 	var lastVersion sql.NullInt64
 
-	row := conn.QueryRow("SELECT MAX(version) FROM migrations_history LIMIT 1")
+	row := conn.QueryRow("SELECT MAX(versions) FROM migrations_history LIMIT 1")
 
 	err = row.Scan(&lastVersion)
 
