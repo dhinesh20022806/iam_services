@@ -32,8 +32,10 @@ func (s *gRPCServer) Run() error {
 
 	user := authService.NewUser();
 	grpcServer := grpc.NewServer()
-
+	
+	fmt.Printf("grpc service running on %s\n", s.addr)
 	handler.NewGrpcAuthService(grpcServer, user)
+
 
 	return grpcServer.Serve(lis)
 }

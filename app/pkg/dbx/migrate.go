@@ -23,7 +23,6 @@ func init() {
 
 	var err error
 
-	fmt.Printf(env.Config.Database.URL + "env value" + "\n")
 	conn, err = sql.Open("postgres", env.Config.Database.URL)
 
 	if err != nil {
