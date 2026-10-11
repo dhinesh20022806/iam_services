@@ -290,10 +290,9 @@ const file_auth_auth_proto_rawDesc = "" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x10\n" +
 	"\x03jwt\x18\x03 \x01(\tR\x03jwt\x12\x14\n" +
-	"\x05valid\x18\x04 \x01(\bR\x05valid2R\n" +
-	"\fLoginService\x12B\n" +
-	"\vIsValidUser\x12\x18.auth.IsValidUserRequest\x1a\x19.auth.IsValidUserResponse2P\n" +
-	"\rSignUpService\x12?\n" +
+	"\x05valid\x18\x04 \x01(\bR\x05valid2\x92\x01\n" +
+	"\vAuthService\x12B\n" +
+	"\vIsValidUser\x12\x18.auth.IsValidUserRequest\x1a\x19.auth.IsValidUserResponse\x12?\n" +
 	"\n" +
 	"CreateUser\x12\x17.auth.CreateUserRequest\x1a\x18.auth.CreateUserResponseB<Z:github.com/dhinesh20022806/iam_service/app/proto/gen;genpbb\x06proto3"
 
@@ -317,10 +316,10 @@ var file_auth_auth_proto_goTypes = []any{
 	(*CreateUserResponse)(nil),  // 3: auth.CreateUserResponse
 }
 var file_auth_auth_proto_depIdxs = []int32{
-	0, // 0: auth.LoginService.IsValidUser:input_type -> auth.IsValidUserRequest
-	2, // 1: auth.SignUpService.CreateUser:input_type -> auth.CreateUserRequest
-	1, // 2: auth.LoginService.IsValidUser:output_type -> auth.IsValidUserResponse
-	3, // 3: auth.SignUpService.CreateUser:output_type -> auth.CreateUserResponse
+	0, // 0: auth.AuthService.IsValidUser:input_type -> auth.IsValidUserRequest
+	2, // 1: auth.AuthService.CreateUser:input_type -> auth.CreateUserRequest
+	1, // 2: auth.AuthService.IsValidUser:output_type -> auth.IsValidUserResponse
+	3, // 3: auth.AuthService.CreateUser:output_type -> auth.CreateUserResponse
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -341,7 +340,7 @@ func file_auth_auth_proto_init() {
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   1,
 		},
 		GoTypes:           file_auth_auth_proto_goTypes,
 		DependencyIndexes: file_auth_auth_proto_depIdxs,

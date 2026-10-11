@@ -4,18 +4,20 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"iam_service/app/pkg/env"
 	"log/slog"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/dhinesh20022806/iam_service/app/pkg/env"
+
 	_ "github.com/lib/pq"
 )
 
 var conn *sql.DB
 
+var Conn *sql.DB
 
 func init() {
 
@@ -36,6 +38,8 @@ func init() {
         conn = nil
         panic(fmt.Errorf("failed to connect to database: %w", err))
     }
+
+	Conn = conn
 
 }
 

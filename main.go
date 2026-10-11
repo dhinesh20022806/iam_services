@@ -1,8 +1,9 @@
 package main
 
 import (
-	"iam_service/app/cmd"
 	"os"
+
+	"github.com/dhinesh20022806/iam_service/app/cmd"
 )
 
 

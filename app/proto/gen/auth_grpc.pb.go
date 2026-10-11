@@ -19,203 +19,139 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	LoginService_IsValidUser_FullMethodName = "/auth.LoginService/IsValidUser"
+	AuthService_IsValidUser_FullMethodName = "/auth.AuthService/IsValidUser"
+	AuthService_CreateUser_FullMethodName  = "/auth.AuthService/CreateUser"
 )
 
-// LoginServiceClient is the client API for LoginService service.
+// AuthServiceClient is the client API for AuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type LoginServiceClient interface {
+type AuthServiceClient interface {
 	IsValidUser(ctx context.Context, in *IsValidUserRequest, opts ...grpc.CallOption) (*IsValidUserResponse, error)
+	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 }
 
-type loginServiceClient struct {
+type authServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewLoginServiceClient(cc grpc.ClientConnInterface) LoginServiceClient {
-	return &loginServiceClient{cc}
+func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
+	return &authServiceClient{cc}
 }
 
-func (c *loginServiceClient) IsValidUser(ctx context.Context, in *IsValidUserRequest, opts ...grpc.CallOption) (*IsValidUserResponse, error) {
+func (c *authServiceClient) IsValidUser(ctx context.Context, in *IsValidUserRequest, opts ...grpc.CallOption) (*IsValidUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(IsValidUserResponse)
-	err := c.cc.Invoke(ctx, LoginService_IsValidUser_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, AuthService_IsValidUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// LoginServiceServer is the server API for LoginService service.
-// All implementations must embed UnimplementedLoginServiceServer
-// for forward compatibility.
-type LoginServiceServer interface {
-	IsValidUser(context.Context, *IsValidUserRequest) (*IsValidUserResponse, error)
-	mustEmbedUnimplementedLoginServiceServer()
+func (c *authServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateUserResponse)
+	err := c.cc.Invoke(ctx, AuthService_CreateUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-// UnimplementedLoginServiceServer must be embedded to have
+// AuthServiceServer is the server API for AuthService service.
+// All implementations must embed UnimplementedAuthServiceServer
+// for forward compatibility.
+type AuthServiceServer interface {
+	IsValidUser(context.Context, *IsValidUserRequest) (*IsValidUserResponse, error)
+	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	mustEmbedUnimplementedAuthServiceServer()
+}
+
+// UnimplementedAuthServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedLoginServiceServer struct{}
+type UnimplementedAuthServiceServer struct{}
 
-func (UnimplementedLoginServiceServer) IsValidUser(context.Context, *IsValidUserRequest) (*IsValidUserResponse, error) {
+func (UnimplementedAuthServiceServer) IsValidUser(context.Context, *IsValidUserRequest) (*IsValidUserResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method IsValidUser not implemented")
 }
-func (UnimplementedLoginServiceServer) mustEmbedUnimplementedLoginServiceServer() {}
-func (UnimplementedLoginServiceServer) testEmbeddedByValue()                      {}
+func (UnimplementedAuthServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
+func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
 
-// UnsafeLoginServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to LoginServiceServer will
+// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AuthServiceServer will
 // result in compilation errors.
-type UnsafeLoginServiceServer interface {
-	mustEmbedUnimplementedLoginServiceServer()
+type UnsafeAuthServiceServer interface {
+	mustEmbedUnimplementedAuthServiceServer()
 }
 
-func RegisterLoginServiceServer(s grpc.ServiceRegistrar, srv LoginServiceServer) {
-	// If the following call panics, it indicates UnimplementedLoginServiceServer was
+func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
+	// If the following call panics, it indicates UnimplementedAuthServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&LoginService_ServiceDesc, srv)
+	s.RegisterService(&AuthService_ServiceDesc, srv)
 }
 
-func _LoginService_IsValidUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuthService_IsValidUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IsValidUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LoginServiceServer).IsValidUser(ctx, in)
+		return srv.(AuthServiceServer).IsValidUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: LoginService_IsValidUser_FullMethodName,
+		FullMethod: AuthService_IsValidUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoginServiceServer).IsValidUser(ctx, req.(*IsValidUserRequest))
+		return srv.(AuthServiceServer).IsValidUser(ctx, req.(*IsValidUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// LoginService_ServiceDesc is the grpc.ServiceDesc for LoginService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var LoginService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "auth.LoginService",
-	HandlerType: (*LoginServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "IsValidUser",
-			Handler:    _LoginService_IsValidUser_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth/auth.proto",
-}
-
-const (
-	SignUpService_CreateUser_FullMethodName = "/auth.SignUpService/CreateUser"
-)
-
-// SignUpServiceClient is the client API for SignUpService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type SignUpServiceClient interface {
-	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
-}
-
-type signUpServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewSignUpServiceClient(cc grpc.ClientConnInterface) SignUpServiceClient {
-	return &signUpServiceClient{cc}
-}
-
-func (c *signUpServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateUserResponse)
-	err := c.cc.Invoke(ctx, SignUpService_CreateUser_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// SignUpServiceServer is the server API for SignUpService service.
-// All implementations must embed UnimplementedSignUpServiceServer
-// for forward compatibility.
-type SignUpServiceServer interface {
-	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
-	mustEmbedUnimplementedSignUpServiceServer()
-}
-
-// UnimplementedSignUpServiceServer must be embedded to have
-// forward compatible implementations.
-//
-// NOTE: this should be embedded by value instead of pointer to avoid a nil
-// pointer dereference when methods are called.
-type UnimplementedSignUpServiceServer struct{}
-
-func (UnimplementedSignUpServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateUser not implemented")
-}
-func (UnimplementedSignUpServiceServer) mustEmbedUnimplementedSignUpServiceServer() {}
-func (UnimplementedSignUpServiceServer) testEmbeddedByValue()                       {}
-
-// UnsafeSignUpServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to SignUpServiceServer will
-// result in compilation errors.
-type UnsafeSignUpServiceServer interface {
-	mustEmbedUnimplementedSignUpServiceServer()
-}
-
-func RegisterSignUpServiceServer(s grpc.ServiceRegistrar, srv SignUpServiceServer) {
-	// If the following call panics, it indicates UnimplementedSignUpServiceServer was
-	// embedded by pointer and is nil.  This will cause panics if an
-	// unimplemented method is ever invoked, so we test this at initialization
-	// time to prevent it from happening at runtime later due to I/O.
-	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
-		t.testEmbeddedByValue()
-	}
-	s.RegisterService(&SignUpService_ServiceDesc, srv)
-}
-
-func _SignUpService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuthService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SignUpServiceServer).CreateUser(ctx, in)
+		return srv.(AuthServiceServer).CreateUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: SignUpService_CreateUser_FullMethodName,
+		FullMethod: AuthService_CreateUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SignUpServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
+		return srv.(AuthServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// SignUpService_ServiceDesc is the grpc.ServiceDesc for SignUpService service.
+// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var SignUpService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "auth.SignUpService",
-	HandlerType: (*SignUpServiceServer)(nil),
+var AuthService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "auth.AuthService",
+	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "IsValidUser",
+			Handler:    _AuthService_IsValidUser_Handler,
+		},
+		{
 			MethodName: "CreateUser",
-			Handler:    _SignUpService_CreateUser_Handler,
+			Handler:    _AuthService_CreateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
