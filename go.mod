@@ -3,6 +3,7 @@ module github.com/dhinesh20022806/iam_service
 go 1.27.1
 
 require (
+	github.com/dhinesh20022806/grpc_service v0.0.0-20261011190157-6f9aa69e65bc // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/golang-migrate/migrate/v4 v4.20.1 // indirect
 	github.com/joeshaw/envdecode v0.0.0-20200121155833-099f1fc765bd // indirect

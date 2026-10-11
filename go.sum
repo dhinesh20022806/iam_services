@@ -1,3 +1,5 @@
+github.com/dhinesh20022806/grpc_service v0.0.0-20261011190157-6f9aa69e65bc h1:ldb/225RofCSjnKoC/QOTj1cEgBdIrcyDQIP3GTZnR8=
+github.com/dhinesh20022806/grpc_service v0.0.0-20261011190157-6f9aa69e65bc/go.mod h1:Y3MLr5A7PRkAcdDymku25V1ruRyusO1z1n5CD3DfhDY=
 github.com/golang-jwt/jwt/v5 v5.3.1 h1:kYf81DTWFe7t+1VvL7eS+jKFVWaUnK9cB1qbwn63YCY=
 github.com/golang-jwt/jwt/v5 v5.3.1/go.mod h1:fxCRLWMO43lRc8nhHWY6LGqRcf+1gQWArsqaEUEa5bE=
 github.com/golang-migrate/migrate/v4 v4.20.1 h1:2N/ToVTKrKl58ynBpgeVJ4In7VcLCjWTZtm4eP1LxhU=

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	genpb "github.com/dhinesh20022806/grpc_service/proto/gen"
 	"github.com/dhinesh20022806/iam_service/app/pkg/dbx"
 	"github.com/dhinesh20022806/iam_service/app/pkg/scrypt"
-	genpb "github.com/dhinesh20022806/iam_service/app/proto/gen"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/lib/pq"
 )

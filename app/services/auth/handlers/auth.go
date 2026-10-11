@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	genpb "github.com/dhinesh20022806/iam_service/app/proto/gen"
+	genpb "github.com/dhinesh20022806/grpc_service/proto/gen"
 	"github.com/dhinesh20022806/iam_service/app/services/auth/types"
 	"google.golang.org/grpc"
 )

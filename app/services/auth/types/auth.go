@@ -3,7 +3,7 @@ package types
 import (
 	"context"
 
-	genpb "github.com/dhinesh20022806/iam_service/app/proto/gen"
+	genpb "github.com/dhinesh20022806/grpc_service/proto/gen"
 )
 
 
