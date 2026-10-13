@@ -18,6 +18,7 @@ var secretKey = []byte("iloveyou3000")
 
 
 type User struct {
+	id string
 	email string
 	password string
 	name string
@@ -29,8 +30,9 @@ func NewUser () *User {
 }
 
 
-func GenerateToken(email string, name string) (string, error) {
+func GenerateToken(email string, id string) (string, error) {
 	registed := jwt.RegisteredClaims{
+		Subject: email, ID: id,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
 			IssuedAt: jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
@@ -39,7 +41,7 @@ func GenerateToken(email string, name string) (string, error) {
 
 	user := User{
 		email: email,
-		name: name,
+		id: id,
 		RegisteredClaims: registed, 
 	}
 
@@ -53,9 +55,10 @@ func (u *User) IsValidUser(ctx context.Context, user *genpb.IsValidUserRequest) 
 
 	var userRes User
 
-	query := `SELECT email,password,name FROM users WHERE email=?`;
+	query := `SELECT id,email,password,name FROM users WHERE email=?`;
 
 	err := dbx.Conn.QueryRow(query, user.Email).Scan(
+		&userRes.id,
 		&userRes.email,
 		&userRes.password,
 		&userRes.name,
@@ -86,7 +89,8 @@ func (u *User) IsValidUser(ctx context.Context, user *genpb.IsValidUserRequest) 
 
 func (u *User) CreateUser(ctx context.Context, user *genpb.CreateUserRequest) (string, error) {
 
-	query := `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`;
+	fmt.Printf("Creating user with email: %s and name: %s\n", user.Email, user.Name)
+	query := `INSERT INTO users (name, email, password) VALUES ($1, $2, $3)`;
 
 	hashedPassword, err := scrypt.HashPassword(user.Password)
 
@@ -105,8 +109,22 @@ func (u *User) CreateUser(ctx context.Context, user *genpb.CreateUserRequest) (s
 
 			}
 		}
+
+		return "",fmt.Errorf("Failed to create user: %v", err)
 	}
-	return GenerateToken(user.Email, user.Name)
+	var newUser User
+	query = `SELECT id,email FROM users WHERE email=?`;
+	
+	err = dbx.Conn.QueryRow(query, user.Email).Scan(
+		&newUser.id,
+		&newUser.email,
+	);
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to retrieve user after creation: %v", err)
+	}
+
+	return GenerateToken(newUser.email, newUser.id)
 }
 
 

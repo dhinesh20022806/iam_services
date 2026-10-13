@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 
 	genpb "github.com/dhinesh20022806/grpc_service/proto/gen"
 	"github.com/dhinesh20022806/iam_service/app/services/auth/types"
@@ -24,6 +25,7 @@ func NewGrpcAuthService(grpc *grpc.Server, user types.AuthService) {
 
 
 func (h *AuthServiceHandler) CreateUser(ctx context.Context, req *genpb.CreateUserRequest) (*genpb.CreateUserResponse, error) {
+	fmt.Printf("Received CreateUser request for user: %s\n", req.Email);
 	token , err := h.authService.CreateUser(ctx, req)
 
 	res := &genpb.CreateUserResponse{
