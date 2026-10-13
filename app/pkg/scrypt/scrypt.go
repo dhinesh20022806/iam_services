@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"golang.org/x/crypto/scrypt"
@@ -41,39 +42,58 @@ func HashPassword(password string) (string, error) {
 }
 
 func ComparePassword(comparePassword, hashedPassword string) (bool, error) {
-	parts := strings.Split(hashedPassword, "$")
-	if len(parts) != 7|| parts[1] != "script" {
-		return false, errors.New("invalid hash format")
-	}
-	
-	var n, r, p int
+    parts := strings.Split(hashedPassword, "$")
 
-	_, err := fmt.Sscanf(parts[2]+"-"+parts[3]+"-"+parts[4], "%d-%d-%d", &n, &r, &p)
+	fmt.Println("Hashed password parts:", hashedPassword, comparePassword) // Debugging line
 
-	if err != nil {
-		return false, errors.New("failed to parse scrypt parameter")
-	}
 
-	salt, err := base64.RawStdEncoding.DecodeString(parts[5])
-	if err != nil {
-		return false, err
-	}
+    if len(parts) != 7 || parts[0] != "" || parts[1] != "scrypt" {
+        return false, errors.New("invalid hash format")
+    }
 
-	expectedHash, err := base64.RawStdEncoding.DecodeString(parts[6])
+    n, err := strconv.Atoi(parts[2])
+    if err != nil {
+        return false, errors.New("invalid scrypt N parameter")
+    }
 
-	if err != nil {
-		return false, err
-	}
+    r, err := strconv.Atoi(parts[3])
+    if err != nil {
+        return false, errors.New("invalid scrypt r parameter")
+    }
 
-	derivedKey, err := scrypt.Key([]byte(comparePassword), salt, n, r, p, len(expectedHash))
+    p, err := strconv.Atoi(parts[4])
+    if err != nil {
+        return false, errors.New("invalid scrypt p parameter")
+    }
 
-	if err != nil {
-		return false, err
-	}
+    // Validate parameters before allocating resources.
+    if n <= 1 || n&(n-1) != 0 || r <= 0 || p <= 0 {
+        return false, errors.New("invalid scrypt parameters")
+    }
 
-	if subtle.ConstantTimeCompare(derivedKey, expectedHash) == 1 {
-		return true, nil
-	}
+    salt, err := base64.RawStdEncoding.DecodeString(parts[5])
+    if err != nil {
+        return false, errors.New("invalid salt encoding")
+    }
 
-	return false, nil
+    expectedHash, err := base64.RawStdEncoding.DecodeString(parts[6])
+    if err != nil {
+        return false, errors.New("invalid hash encoding")
+    }
+
+    if len(salt) == 0 || len(expectedHash) == 0 {
+        return false, errors.New("empty salt or hash")
+    }
+
+    derivedKey, err := scrypt.Key(
+        []byte(comparePassword),
+        salt,
+        n, r, p,
+        len(expectedHash),
+    )
+    if err != nil {
+        return false, err
+    }
+
+    return subtle.ConstantTimeCompare(derivedKey, expectedHash) == 1, nil
 }

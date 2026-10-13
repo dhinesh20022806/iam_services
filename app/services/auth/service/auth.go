@@ -55,7 +55,7 @@ func (u *User) IsValidUser(ctx context.Context, user *genpb.IsValidUserRequest) 
 
 	var userRes User
 
-	query := `SELECT id,email,password,name FROM users WHERE email=?`;
+	query := `SELECT id,email,password,name FROM users WHERE email=$1`;
 
 	err := dbx.Conn.QueryRow(query, user.Email).Scan(
 		&userRes.id,
@@ -65,12 +65,14 @@ func (u *User) IsValidUser(ctx context.Context, user *genpb.IsValidUserRequest) 
 	);
 
 	if err != nil {
+		fmt.Printf("Error retrieving user from database: %v\n", err)
 		return "", "", fmt.Errorf("invalid user or password!")
 	}
 
 	isValid, err := scrypt.ComparePassword(user.Password, userRes.password)
 
 	if err != nil {
+		fmt.Printf("Error comparing password: %v\n", err)
 		return "", "", fmt.Errorf("invalid user or password!")
 	}
 
@@ -78,9 +80,12 @@ func (u *User) IsValidUser(ctx context.Context, user *genpb.IsValidUserRequest) 
 		return "", "", fmt.Errorf("invalid user or password!")
 	}
 
-   token, err :=  GenerateToken(userRes.email, userRes.name)
+   token, err :=  GenerateToken(userRes.email, userRes.id)
+
+
 
    if err != nil {
+	fmt.Printf("Error generating token: %v\n", err)
 	return "", "", fmt.Errorf("invalid user or password!");
    }
 
